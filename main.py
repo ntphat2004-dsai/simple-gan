@@ -16,31 +16,28 @@ from IPython.display import display, HTML
 
 def launch_tensorboard():
     try:
-        tb_process = subprocess.Popen(
-            ["tensorboard", "--logdir", "runs/GAN_MNIST", "--host", "0.0.0.0"],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        time.sleep(5)
+        if 'google.colab' in sys.modules:
+            from tensorboard import notebook
+            notebook.start("--logdir=runs/GAN_MNIST")
+            print("TensorBoard is running inline in Colab. You can access it below.")
+            return None
+        else:
+            tb_process = subprocess.Popen(
+                ["tensorboard", "--logdir", "runs/GAN_MNIST", "--host", "0.0.0.0"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            time.sleep(5)
+            url = "http://localhost:6006"
+            if "KAGGLE_URL_BASE" in os.environ:
+                display(HTML(f'<a href="{url}" target="_blank">Click here to open TensorBoard</a>'))
+                print("TensorBoard is running. Click the link above to open it.")
+            else:
+                print("TensorBoard URL:", url)
+                webbrowser.open(url)
+            return tb_process
     except Exception as e:
         print("Error launching TensorBoard:", e)
         return None
-    
-    url = "http://localhost:6006"
-
-    # Check if running in Colab or Kaggle; if so, display a clickable link instead of opening a browser window
-    if 'google.colab' in sys.modules or "KAGGLE_URL_BASE" in os.environ:
-        try:
-            display(HTML(f'<a href="{url}" target="_blank">Click here to open TensorBoard</a>'))
-        except Exception as e:
-            print("Error displaying clickable link:", e)
-        print("TensorBoard is running. Click the link above to open it.")
-    else:
-        print("TensorBoard URL:", url)
-        try:
-            webbrowser.open(url)
-        except Exception as e:
-            print("Error opening web browser:", e)
-    return tb_process
 
 
 if __name__ == "__main__":
