@@ -23,8 +23,8 @@ if __name__ == "__main__":
     discriminator = Discriminator(IMAGE_DIM).to(DEVICE)
 
     # Initialize Optimizers
-    gen_optimizer = optim.Adam(generator.parameters(), lr=LEARNING_RATE)
-    dis_optimizer = optim.Adam(discriminator.parameters(), lr=LEARNING_RATE)
+    gen_optimizer = optim.Adam(generator.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
+    dis_optimizer = optim.Adam(discriminator.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
 
     # Loss Function
     criterion = nn.BCELoss()
