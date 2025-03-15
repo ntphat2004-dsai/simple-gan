@@ -26,13 +26,17 @@ def train(generator, discriminator, gen_optimizer, dis_optimizer,
             noise = torch.randn(batch_size, NOISE_DIM).to(DEVICE)
             fake_img = generator(noise)
 
+            # Label smoothing
+            real_labels = torch.full((batch_size,), 0.9, dtype=torch.float, device=DEVICE)  # Real labels = 0.9
+            fake_labels = torch.full((batch_size,), 0.1, dtype=torch.float, device=DEVICE)  # Fake labels = 0.1
+
             # Compute loss for real images
             dis_real = discriminator(real_img).view(-1) # view(-1) means flatten
-            loss_dis_real = criterion(dis_real, torch.ones_like(dis_real)) # real image should be classified as real (1)
+            loss_dis_real = criterion(dis_real, real_labels) # real image should be classified as real (1)
 
             # Compute loss for fake images
             dis_fake = discriminator(fake_img.detach()).view(-1) # detach() to avoid backpropagation to generator
-            loss_dis_fake = criterion(dis_fake, torch.zeros_like(dis_fake)) # fake image should be classified as fake (0)
+            loss_dis_fake = criterion(dis_fake, fake_labels) # fake image should be classified as fake (0)
 
             # Combine losses
             loss_dis = (loss_dis_real + loss_dis_fake) / 2
@@ -46,7 +50,7 @@ def train(generator, discriminator, gen_optimizer, dis_optimizer,
             dis_pred = discriminator(fake_img).view(-1) # view(-1) means flatten
 
             # Compute loss
-            loss_gen = criterion(dis_pred, torch.ones_like(dis_pred)) # fake image should be classified as real (1)
+            loss_gen = criterion(dis_pred, real_labels) # fake image should be classified as real (1)
 
             # Update Generator
             generator.zero_grad()
