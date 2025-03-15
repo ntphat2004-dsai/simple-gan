@@ -14,30 +14,30 @@ import webbrowser, time, subprocess, sys, os
 from IPython.display import display, HTML
 
 
-def launch_tensorboard():
-    try:
-        if 'google.colab' in sys.modules:
-            from tensorboard import notebook
-            notebook.start("--logdir=runs/GAN_MNIST")
-            print("TensorBoard is running inline in Colab. You can access it below.")
-            return None
-        else:
-            tb_process = subprocess.Popen(
-                ["tensorboard", "--logdir", "runs/GAN_MNIST", "--host", "0.0.0.0"],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-            time.sleep(5)
-            url = "http://localhost:6006"
-            if "KAGGLE_URL_BASE" in os.environ:
-                display(HTML(f'<a href="{url}" target="_blank">Click here to open TensorBoard</a>'))
-                print("TensorBoard is running. Click the link above to open it.")
-            else:
-                print("TensorBoard URL:", url)
-                webbrowser.open(url)
-            return tb_process
-    except Exception as e:
-        print("Error launching TensorBoard:", e)
-        return None
+# def launch_tensorboard():
+#     try:
+#         if 'google.colab' in sys.modules:
+#             from tensorboard import notebook
+#             notebook.start("--logdir=runs/GAN_MNIST")
+#             print("TensorBoard is running inline in Colab. You can access it below.")
+#             return None
+#         else:
+#             tb_process = subprocess.Popen(
+#                 ["tensorboard", "--logdir", "runs/GAN_MNIST", "--host", "0.0.0.0"],
+#                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
+#             )
+#             time.sleep(5)
+#             url = "http://localhost:6006"
+#             if "KAGGLE_URL_BASE" in os.environ:
+#                 display(HTML(f'<a href="{url}" target="_blank">Click here to open TensorBoard</a>'))
+#                 print("TensorBoard is running. Click the link above to open it.")
+#             else:
+#                 print("TensorBoard URL:", url)
+#                 webbrowser.open(url)
+#             return tb_process
+#     except Exception as e:
+#         print("Error launching TensorBoard:", e)
+#         return None
 
 
 if __name__ == "__main__":
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     writer_real = SummaryWriter(f"runs/GAN_MNIST/real")
 
     # Launch TensorBoard
-    tb_process = launch_tensorboard()
+    # tb_process = launch_tensorboard()
 
     # Print model architecture
     print(generator)
