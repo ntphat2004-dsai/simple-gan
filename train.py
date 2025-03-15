@@ -8,17 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import make_grid
 from simple_gan import *
 from prepare_data import *
-import webbrowser
-
-# Hyperparameters
-IMAGE_DIM = 28*28
-NOISE_DIM = 100
-BATCH_SIZE = 32
-LEARNING_RATE = 3e-4
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-FIXED_NOISE = torch.randn((BATCH_SIZE, NOISE_DIM)).to(DEVICE) # BATCH_SIZE images to visualize generator's progress 
-# Why need fixed noise? Because we want to see how the generator improves over time by generating images from the same noise
-GLOBAL_STEP = 0 # Tensorboard global step for visualization purposes
+from hyper_params import *
 
 def train(generator, discriminator, gen_optimizer, dis_optimizer, 
           criterion, train_dataloader, writer_fake, writer_real, num_epochs=50):
@@ -79,40 +69,3 @@ def train(generator, discriminator, gen_optimizer, dis_optimizer,
                     writer_real.add_image("Real Images", img_grid_real, global_step=GLOBAL_STEP)
 
                     GLOBAL_STEP += 1
-
-
-if __name__ == "__main__":
-    # Prepare Data
-    train_data, _ = prepare_data()
-    train_dataloader = create_dataloader(train_data, BATCH_SIZE)
-
-    # Initialize Models
-    generator = Generator(NOISE_DIM, IMAGE_DIM).to(DEVICE)
-    discriminator = Discriminator(IMAGE_DIM).to(DEVICE)
-
-    # Initialize Optimizers
-    gen_optimizer = optim.Adam(generator.parameters(), lr=LEARNING_RATE)
-    dis_optimizer = optim.Adam(discriminator.parameters(), lr=LEARNING_RATE)
-
-    # Loss Function
-    criterion = nn.BCELoss()
-
-    # Tensorboard
-    writer_fake = SummaryWriter(f"runs/GAN_MNIST/fake")
-    writer_real = SummaryWriter(f"runs/GAN_MNIST/real")
-
-    # Open TensorBoard
-    url = "http://localhost:6006"
-    webbrowser.open(url)
-    # Print model architecture
-
-    print(generator)
-    print(discriminator)
-
-    # Print device
-    print(f"Device: {DEVICE}")
-
-    # Train
-    train(generator, discriminator, gen_optimizer, dis_optimizer, 
-          criterion, train_dataloader, writer_fake, writer_real)
-    
