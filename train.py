@@ -42,7 +42,7 @@ def train(generator, discriminator, gen_optimizer, dis_optimizer,
             loss_dis = (loss_dis_real + loss_dis_fake) / 2
 
             # Update Discriminator
-            discriminator.zero_grad()
+            dis_optimizer.zero_grad()
             loss_dis.backward()
             dis_optimizer.step()
 
@@ -53,7 +53,7 @@ def train(generator, discriminator, gen_optimizer, dis_optimizer,
             loss_gen = criterion(dis_pred, real_labels) # fake image should be classified as real (1)
 
             # Update Generator
-            generator.zero_grad()
+            gen_optimizer.zero_grad()
             loss_gen.backward()
             gen_optimizer.step()
 
